@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title> build datatable from source </title>
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
+    <script type="text/javascript" language="javascript"
+            src="//code.jquery.com/jquery-1.12.4.js">
+    </script>
+    <script type="text/javascript" language="javascript"
+            src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js">
+    </script>
+
+    <script type="text/javascript">
+    var dataSet2 = [
+      ["Morty", "Grandkid", "Teenager", "Male", "Human"],
+      ["Summer", "Grandkid", "Teenager", "Female", "Human"],
+      ["Mr.PuppyButtHole", "Family Friend", "???", "Male?", "???"],
+      ["Jerry", "Son-in-law", "Adult", "Male", "Human"],
+      ["Beth", "Daughter", "Adule", "Female", "Human"],
+      ["Bird Person", "Friend", "Adult", "Male", "Bird Person"]
+    ];
+
+    $(document).ready(function() {
+      $('#example2').DataTable ( {
+        data: dataSet2,
+        columns: [
+          {title: "Name"},
+          {title: "Relation"},
+          {title: "Age"},
+          {title: "Gender"},
+          {title: "Specie"}
+        ]
+      } );
+    } );
+    </script>
+  </head>
+  <body>
+    <table id="example" class="display" width="100%"> </table>
+  </body>
+</html>
