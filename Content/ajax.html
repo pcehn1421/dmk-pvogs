@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <title> AJAX </title>>
+    <script langauge="JavaScript" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js">
+    </script>
+		<script language="JavaScript" type="text/javascript" src="./support/jquery.dataTables.min.js"></script>
+		<script language="JavaScript" type="text/javascript" src="./support/json2.js"></script>
+    <script language="JavaScript" type="text/javascript" class="init">
+    $(document).ready(function() {
+      $('#example').DataTable( {
+        "ajax" : {
+          "url" : './pVOGS_JSON.txt',
+          "dataSrc" : "demo"
+        }
+      } );
+    } );
+
+    </script>
+    <link rel="stylesheet" type="text/css" href="./support/jquery.dataTables.min.css"
+  </head>
+  <body>
+    <table id="example" class="display">
+      <thead>
+        <tr>
+          <th>Species</th>
+          <th>Taxon-id</th>
+          <th>Accession</th>
+          <th>Length</th>
+          <th>Protein</th>
+          <th>Number_Supp_proteins</th>
+          <th>VOGs</th>
+          <th>DataBank</th>
+          <th>Host or Lab</th>
+          <th>Host Domain</th>
+          <th>Genetic Material</th>
+          <th>Order</th>
+          <th>Family</th>
+          <th>Genus</th>
+          <th>Species</th>
+        </tr>
+      </thead>
+      <tfoot>
+        <tr>
+          <th>Species</th>
+          <th>Taxon-id</th>
+          <th>Accession</th>
+          <th>Length</th>
+          <th>Protein</th>
+          <th>Number_Supp_proteins</th>
+          <th>VOGs</th>
+          <th>DataBank</th>
+          <th>Host or Lab</th>
+          <th>Host Domain</th>
+          <th>Genetic Material</th>
+          <th>Order</th>
+          <th>Family</th>
+          <th>Genus</th>
+          <th>Species</th>
+        </tr>
+      </tfoot>
+    </table>
+  </body>
+</html>

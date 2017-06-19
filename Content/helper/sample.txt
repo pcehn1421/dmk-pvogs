@@ -1,0 +1,13 @@
+Acinetobacter phage phiAC-1	1229760	NC_028995	1..43216	82	1	47	Refseq	Acinetobacter soli KZ-1	Bacteria	dsDNA viruses, no RNA stage	Caudovirales	Myoviridae	NA	Acinetobacter phage phiAC-1
+Acinetobacter phage Presley	1406780	NC_023581	1..77792	95	0	36	Refseq	Acinetobacter baumannii M2	Bacteria	dsDNA viruses, no RNA stage	Caudovirales	Podoviridae	N4likevirus	Acinetobacter phage Presley
+Acinetobacter phage vB_AbaM_Acibel004	1481186	NC_025462	1..99730	156	2	62	Refseq	Acinetobacter baumannii	Bacteria	dsDNA viruses, no RNA stage	Caudovirales	Myoviridae	NA	Acinetobacter phage vB_AbaM_Acibel004
+Acinetobacter phage vB_AbaM_phiAbaA1	1605379	KJ628499	1..104906	165	5	60	Genbank	Acinetobacter baumannii Acb8/09	Bacteria	dsDNA viruses, no RNA stage	Caudovirales	Myoviridae	NA	Acinetobacter phage vB_AbaM_phiAbaA1
+Acinetobacter phage vB_AbaP_Acibel007	1481187	NC_025457	1..42654	53	0	31	Refseq	Acinetobacter baumannii	Bacteria	dsDNA viruses, no RNA stage	Caudovirales	Podoviridae	NA	Acinetobacter phage vB_AbaP_Acibel007
+Acinetobacter phage vB_AbaP_PD-6A3	1701807	NC_028684	1..41563	48	0	39	Refseq	Acinetobacter baumannii	Bacteria	dsDNA viruses, no RNA stage	Caudovirales	Podoviridae	NA	Acinetobacter phage vB_AbaP_PD-6A3
+Acinetobacter phage vB_AbaP_PD-AB9	1701808	NC_028679	1..40938	48	0	37	Refseq	Acinetobacter baumannii	Bacteria	dsDNA viruses, no RNA stage	Caudovirales	Podoviridae	NA	Acinetobacter phage vB_AbaP_PD-AB9
+Acinetobacter phage YMC-13-01-C62	1505225	NC_024785	1..44844	84	3	68	Refseq	Acinetobacter baumannii YMC/13/01/C62	Bacteria	dsDNA viruses, no RNA stage	Caudovirales	Myoviridae	NA	Acinetobacter phage YMC-13-01-C62
+Acinetobacter phage YMC11/11/R3177	1628721	KP861230	1..47575	80	1	50	Genbank	Acinetobacter sp.	Bacteria	dsDNA viruses, no RNA stage	Caudovirales	Podoviridae	NA	Acinetobacter phage YMC11/11/R3177
+Acinetobacter phage YMC11/12/R1215	1628722	KP861231	1..44866	85	2	65	Genbank	Acinetobacter sp.	Bacteria	dsDNA viruses, no RNA stage	Caudovirales	Myoviridae	NA	Acinetobacter phage YMC11/12/R1215
+Acinetobacter phage YMC11/12/R2315	1628720	NC_028855	1..44846	85	1	65	Refseq	Acinetobacter sp.	Bacteria	dsDNA viruses, no RNA stage	Caudovirales	Myoviridae	NA	Acinetobacter phage YMC11/12/R2315
+Acinetobacter phage YMC13/03/R2096	1560342	NC_027332	1..98170	162	6	60	Refseq	Acinetobacter baumannii YMC13/03/R2096	Bacteria	dsDNA viruses, no RNA stage	Caudovirales	Myoviridae	NA	Acinetobacter phage YMC13/03/R2096
+Acinetobacter phage ZZ1	1049283	NC_018087	1..166687	256	1	166	Refseq	NA	Bacteria	dsDNA viruses, no RNA stage	Caudovirales	Myoviridae	T4likevirus	Acinetobacter phage ZZ1

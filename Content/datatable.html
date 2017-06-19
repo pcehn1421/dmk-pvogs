@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>DataTables example - Search API (regular expressions)</title>
+		<link rel="stylesheet" type="text/css" href="./support/jquery.dataTables.min.css">
+		<script src="./support/jquery-1.12.4.js"></script>
+		<script src="./support/jquery.dataTables.min.js"></script>
+		<script src="./support/json2.js"></script>
+		<script type="text/javascript" class="init">
+
+		var dataSet = [
+			    [ "Tiger Nixon", "System Architect", "Edinburgh", "5421", "2011/04/25", "$320,800" ],
+			    [ "Garrett Winters", "Accountant", "Tokyo", "8422", "2011/07/25", "$170,750" ],
+			    [ "Ashton Cox", "Junior Technical Author", "San Francisco", "1562", "2009/01/12", "$86,000" ],
+			    [ "Cedric Kelly", "Senior Javascript Developer", "Edinburgh", "6224", "2012/03/29", "$433,060" ],
+			    [ "Airi Satou", "Accountant", "Tokyo", "5407", "2008/11/28", "$162,700" ],
+			    [ "Brielle Williamson", "Integration Specialist", "New York", "4804", "2012/12/02", "$372,000" ],
+			    [ "Herrod Chandler", "Sales Assistant", "San Francisco", "9608", "2012/08/06", "$137,500" ],
+			    [ "Rhona Davidson", "Integration Specialist", "Tokyo", "6200", "2010/10/14", "$327,900" ],
+			    [ "Colleen Hurst", "Javascript Developer", "San Francisco", "2360", "2009/09/15", "$205,500" ],
+			    [ "Sonya Frost", "Software Engineer", "Edinburgh", "1667", "2008/12/13", "$103,600" ],
+			    [ "Jena Gaines", "Office Manager", "London", "3814", "2008/12/19", "$90,560" ],
+			    [ "Quinn Flynn", "Support Lead", "Edinburgh", "9497", "2013/03/03", "$342,000" ],
+			    [ "Charde Marshall", "Regional Director", "San Francisco", "6741", "2008/10/16", "$470,600" ],
+			    [ "Haley Kennedy", "Senior Marketing Designer", "London", "3597", "2012/12/18", "$313,500" ],
+			    [ "Tatyana Fitzpatrick", "Regional Director", "London", "1965", "2010/03/17", "$385,750" ],
+			    [ "Michael Silva", "Marketing Designer", "London", "1581", "2012/11/27", "$198,500" ],
+			    [ "Paul Byrd", "Chief Financial Officer (CFO)", "New York", "3059", "2010/06/09", "$725,000" ],
+			    [ "Gloria Little", "Systems Administrator", "New York", "1721", "2009/04/10", "$237,500" ],
+			    [ "Bradley Greer", "Software Engineer", "London", "2558", "2012/10/13", "$132,000" ],
+			    [ "Dai Rios", "Personnel Lead", "Edinburgh", "2290", "2012/09/26", "$217,500" ],
+			    [ "Jenette Caldwell", "Development Lead", "New York", "1937", "2011/09/03", "$345,000" ],
+			    [ "Yuri Berry", "Chief Marketing Officer (CMO)", "New York", "6154", "2009/06/25", "$675,000" ],
+			    [ "Caesar Vance", "Pre-Sales Support", "New York", "8330", "2011/12/12", "$106,450" ],
+			    [ "Doris Wilder", "Sales Assistant", "Sidney", "3023", "2010/09/20", "$85,600" ],
+			    [ "Angelica Ramos", "Chief Executive Officer (CEO)", "London", "5797", "2009/10/09", "$1,200,000" ],
+			    [ "Gavin Joyce", "Developer", "Edinburgh", "8822", "2010/12/22", "$92,575" ],
+			    [ "Jennifer Chang", "Regional Director", "Singapore", "9239", "2010/11/14", "$357,650" ],
+			    [ "Brenden Wagner", "Software Engineer", "San Francisco", "1314", "2011/06/07", "$206,850" ],
+			    [ "Fiona Green", "Chief Operating Officer (COO)", "San Francisco", "2947", "2010/03/11", "$850,000" ],
+			    [ "Shou Itou", "Regional Marketing", "Tokyo", "8899", "2011/08/14", "$163,000" ],
+			    [ "Michelle House", "Integration Specialist", "Sidney", "2769", "2011/06/02", "$95,400" ],
+			    [ "Suki Burks", "Developer", "London", "6832", "2009/10/22", "$114,500" ],
+			    [ "Prescott Bartlett", "Technical Author", "London", "3606", "2011/05/07", "$145,000" ],
+			    [ "Gavin Cortez", "Team Leader", "San Francisco", "2860", "2008/10/26", "$235,500" ],
+			    [ "Martena Mccray", "Post-Sales support", "Edinburgh", "8240", "2011/03/09", "$324,050" ],
+			    [ "Unity Butler", "Marketing Designer", "San Francisco", "5384", "2009/12/09", "$85,675" ]
+				];
+
+		$.fn.dataTable.ext.search.push(
+			function( settings, data, dataIndex ) {
+				var min = parseInt( $('#min').val(), 10 );
+				var max = parseInt( $('#max').val(), 10 );
+				var nopVOG = parseFloat( data[4] ) || 0; // use data for the age column
+
+				if (( isNaN( min ) && isNaN( max )) ||
+					 ( isNaN( min ) && nopVOG <= max ) ||
+					 ( min <= nopVOG   && isNaN( max )) ||
+					 ( min <= nopVOG   && nopVOG <= max ))
+				{
+					return true;
+				}
+				return false;
+			}
+		);
+
+		function filterGlobal () {
+			$('#example').DataTable().search(
+				$('#global_filter').val(),
+				$('#global_regex').prop('checked'),
+				$('#global_smart').prop('checked')
+			).draw();
+		}
+
+		function filterColumn ( i ) {
+			$('#example').DataTable().column( i ).search(
+				$('#col'+i+'_filter').val(),
+				$('#col'+i+'_regex').prop('checked'),
+				$('#col'+i+'_smart').prop('checked')
+			).draw();
+		}
+
+		$(document).ready(function() {
+			$('#searchLink').click(function(){
+				$('#searchTable').toggle('slow');
+			} );
+
+			$('#rangeLink').click(function(){
+				$('#rangeSearch').toggle('slow');
+			} );
+
+			var table = $('#example').DataTable({
+				initComplete: function () {
+					this.api().columns([6,7]).every( function () {
+						var column = this;
+						var select = $('<select><option value=""></option></select>')
+							.appendTo( $(column.header()).empty() )
+							.on( 'change', function () {
+								var val = $.fn.dataTable.util.escapeRegex(
+									$(this).val()
+								);
+
+								column
+									.search( val ? '^'+val+'$' : '', true, false )
+									.draw();
+							} );
+
+						column.data().unique().sort().each( function ( d, j ) {
+							select.append( '<option value="'+d+'">'+d+'</option>' )
+						} );
+					} );
+				}
+			});
+
+			$('#min, #max').keyup( function() {
+				table.draw();
+			} );
+
+			$('input.global_filter').on( 'keyup click', function () {
+				filterGlobal();
+			} );
+
+			$('input.column_filter').on( 'keyup click', function () {
+				filterColumn( $(this).parents('tr').attr('data-column') );
+			} );
+		} );
+
+
+		</script>
+	</head>
+	<body>
+		<button id="rangeLink" onclick="toggleRange();">Range Search</button>
+		<table id="rangeSearch">
+			<tbody>
+				<tr>
+					<td>Minimum # of pVOGs:</td>
+					<td><input type="text" id="min" name="min"></td>
+				</tr>
+				<tr>
+					<td>Maximum # of pVOGs:</td>
+					<td><input type="text" id="max" name="max"></td>
+				</tr>
+			</tbody>
+		</table>
+
+		<button id="searchLink" onclick="toggleTable();">Search Columns</button>
+		<table id="searchTable">
+		<thead>
+			<tr>
+				<th>Target</th>
+				<th>Search text</th>
+				<th>Treat as regex</th>
+				<th>Use smart search</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr id="filter_global">
+				<td>Global search</td>
+				<td align="center"><input type="text" class="global_filter" id="global_filter"></td>
+				<td align="center"><input type="checkbox" class="global_filter" id="global_regex"></td>
+				<td align="center"><input type="checkbox" class="global_filter" id="global_smart" checked="checked"></td>
+			</tr>
+			<tr id="filter_col1" data-column="0">
+				<td>Organism Name</td>
+				<td align="center"><input type="text" class="column_filter" id="col0_filter"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col0_regex"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col0_smart" checked="checked"></td>
+			</tr>
+			<tr id="filter_col2" data-column="1">
+				<td>Genome Accession</td>
+				<td align="center"><input type="text" class="column_filter" id="col1_filter"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col1_regex"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col1_smart" checked="checked"></td>
+			</tr>
+			<tr id="filter_col3" data-column="2">
+				<td>Genome Size</td>
+				<td align="center"><input type="text" class="column_filter" id="col2_filter"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col2_regex"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col2_smart" checked="checked"></td>
+			</tr>
+			<tr id="filter_col4" data-column="3">
+				<td>Proteins</td>
+				<td align="center"><input type="text" class="column_filter" id="col3_filter"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col3_regex"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col3_smart" checked="checked"></td>
+			</tr>
+			<tr id="filter_col5" data-column="4">
+				<td># Vogs</td>
+				<td align="center"><input type="text" class="column_filter" id="col4_filter"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col4_regex"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col4_smart" checked="checked"></td>
+			</tr>
+			<tr id="filter_col6" data-column="5">
+				<td>Host</td>
+				<td align="center"><input type="text" class="column_filter" id="col5_filter"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col5_regex"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col5_smart" checked="checked"></td>
+			</tr>
+			<tr id="filter_col8" data-column="7">
+				<td>Genetic Material</td>
+				<td align="center"><input type="text" class="column_filter" id="col7_filter"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col7_regex"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col7_smart" checked="checked"></td>
+			</tr>
+			<tr id="filter_col9" data-column="8">
+				<td>Order</td>
+				<td align="center"><input type="text" class="column_filter" id="col8_filter"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col8_regex"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col9_smart" checked="checked"></td>
+			</tr>
+			<tr id="filter_col10" data-column="9">
+				<td>Family</td>
+				<td align="center"><input type="text" class="column_filter" id="col9_filter"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col9_regex"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col9_smart" checked="checked"></td>
+			</tr>
+			<tr id="filter_col11" data-column="10">
+				<td>Genus</td>
+				<td align="center"><input type="text" class="column_filter" id="col10_filter"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col10_regex"></td>
+				<td align="center"><input type="checkbox" class="column_filter" id="col10_smart" checked="checked"></td>
+			</tr>
+		</tbody>
+		</table>
+		<table id="example" style="width: 100%;">
+		<thead>
+		<tr role="row">
+			<th style="width: 73px;">1</th>
+			<th style="width: 120px;">2</th>
+			<th style="width: 56px;">3</th>
+			<th style="width: 27px;">4</th>
+			<th style="width: 55px;">5</th>
+			<th style="width: 55px;">6</th>
+			<th style="width: 73px;">7</th>
+			<th style="width: 120px;">8</th>
+			<th style="width: 56px;">9</th>
+			<th style="width: 27px;">10</th>
+			<th style="width: 55px;">11</th>
+		</tr>
+		</thead>
+		<tfoot>
+			<tr>
+				<th style="width: 73px;">1</th>
+				<th style="width: 120px;">2</th>
+				<th style="width: 56px;">3</th>
+				<th style="width: 27px;">4</th>
+				<th style="width: 55px;">5</th>
+				<th style="width: 55px;">6</th>
+				<th style="width: 73px;">7</th>
+				<th style="width: 120px;">8</th>
+				<th style="width: 56px;">9</th>
+				<th style="width: 27px;">10</th>
+				<th style="width: 55px;">11</th>
+			</tr>
+		</tfoot>
+		<tbody>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=645116" target="_blank">Acaryochloris phage A-HIS1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/FN436268" target="_blank">FN436268 ➚</a></td><td>55653</td><td>97</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/FN436268.html">13</a></td><td>Acaryochloris marina strain MBIC11017</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=645117" target="_blank">Acaryochloris phage A-HIS2 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/FN436269" target="_blank">FN436269 ➚</a></td><td>57391</td><td>106</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/FN436269.html">11</a></td><td>Acaryochloris marina strain MBIC11017</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=46014" target="_blank">Acholeplasma phage L2 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_001447" target="_blank">NC_001447 ➚</a></td><td>11965</td><td>18</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_001447.html">3</a></td><td>Acholeplasma laidlawii</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>NA</td><td>Plasmaviridae</td><td>Plasmavirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=10876" target="_blank">Acholeplasma phage MV-L1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_001341" target="_blank">NC_001341 ➚</a></td><td>4491</td><td>9</td><td>0</td><td>Acholeplasma laidlawii</td><td>Bacteria</td><td>ssDNA viruses</td><td>NA</td><td>Inoviridae</td><td>Plectrovirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1589747" target="_blank">Achromobacter phage 83-24 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_028834" target="_blank">NC_028834 ➚</a></td><td>48216</td><td>65</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_028834.html">34</a></td><td>Achromobacter xylosoxidans</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1416009" target="_blank">Achromobacter phage JWAlpha ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_023556" target="_blank">NC_023556 ➚</a></td><td>72329</td><td>91</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_023556.html">51</a></td><td>Achromobacter xylosoxidans DSM 11852</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>N4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1416008" target="_blank">Achromobacter phage JWDelta ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KF787094" target="_blank">KF787094 ➚</a></td><td>73659</td><td>89</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KF787094.html">51</a></td><td>Achromobacter xylosoxidans DSM 11852</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>N4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1589748" target="_blank">Achromobacter phage JWF ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_029075" target="_blank">NC_029075 ➚</a></td><td>81541</td><td>119</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_029075.html">32</a></td><td>Achromobacter xylosoxidans</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1589746" target="_blank">Achromobacter phage JWX ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_028768" target="_blank">NC_028768 ➚</a></td><td>49714</td><td>69</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_028768.html">32</a></td><td>Achromobacter xylosoxidans</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1610509" target="_blank">Achromobacter phage phiAxp-1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_029033" target="_blank">NC_029033 ➚</a></td><td>45045</td><td>64</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_029033.html">34</a></td><td>Achromobacter xylosoxidans A22732</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1664246" target="_blank">Achromobacter phage phiAxp-2 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_029106" target="_blank">NC_029106 ➚</a></td><td>62220</td><td>86</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_029106.html">37</a></td><td>Achromobacter xylosoxidans</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1664247" target="_blank">Achromobacter phage phiAxp-3 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_028908" target="_blank">NC_028908 ➚</a></td><td>72409</td><td>80</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_028908.html">52</a></td><td>Achromobacter xylosoxidans</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>N4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=437444" target="_blank">Acidianus bottle-shaped virus ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_009452" target="_blank">NC_009452 ➚</a></td><td>23814</td><td>57</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_009452.html">31</a></td><td>Acidianus convivator</td><td>Archaea</td><td>dsDNA viruses, no RNA stage</td><td>NA</td><td>Ampullaviridae</td><td>Ampullavirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1732173" target="_blank">Acidianus bottle-shaped virus 2 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_028938" target="_blank">NC_028938 ➚</a></td><td>22613</td><td>54</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_028938.html">30</a></td><td>Sulfolobales</td><td>Archaea</td><td>dsDNA viruses, no RNA stage</td><td>NA</td><td>Ampullaviridae</td><td>Ampullavirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1732174" target="_blank">Acidianus bottle-shaped virus 3 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_028787" target="_blank">NC_028787 ➚</a></td><td>28489</td><td>66</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_028787.html">32</a></td><td>Sulfolobales</td><td>Archaea</td><td>dsDNA viruses, no RNA stage</td><td>NA</td><td>Ampullaviridae</td><td>Ampullavirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=235266" target="_blank">Acidianus filamentous virus 1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_005830" target="_blank">NC_005830 ➚</a></td><td>20869</td><td>40</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_005830.html">10</a></td><td>Acidianus infernus</td><td>Archaea</td><td>dsDNA viruses, no RNA stage</td><td>Ligamenvirales</td><td>Lipothrixviridae</td><td>Gammalipothrixvirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=300186" target="_blank">Acidianus filamentous virus 2 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_009884" target="_blank">NC_009884 ➚</a></td><td>31787</td><td>53</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_009884.html">12</a></td><td>Acidianus pozzuoliensis</td><td>Archaea</td><td>dsDNA viruses, no RNA stage</td><td>Ligamenvirales</td><td>Lipothrixviridae</td><td>Deltalipothrixvirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=346881" target="_blank">Acidianus filamentous virus 3 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_010155" target="_blank">NC_010155 ➚</a></td><td>40449</td><td>68</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_010155.html">37</a></td><td>Acidianus sp. Acii25</td><td>Archaea</td><td>dsDNA viruses, no RNA stage</td><td>Ligamenvirales</td><td>Lipothrixviridae</td><td>Betalipothrixvirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=346882" target="_blank">Acidianus filamentous virus 6 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_010152" target="_blank">NC_010152 ➚</a></td><td>39577</td><td>66</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_010152.html">38</a></td><td>Acidianus convivator</td><td>Archaea</td><td>dsDNA viruses, no RNA stage</td><td>Ligamenvirales</td><td>Lipothrixviridae</td><td>Betalipothrixvirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=346883" target="_blank">Acidianus filamentous virus 7 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_010153" target="_blank">NC_010153 ➚</a></td><td>36895</td><td>61</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_010153.html">42</a></td><td>Acidianus convivator</td><td>Archaea</td><td>dsDNA viruses, no RNA stage</td><td>Ligamenvirales</td><td>Lipothrixviridae</td><td>Betalipothrixvirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=346884" target="_blank">Acidianus filamentous virus 8 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_010154" target="_blank">NC_010154 ➚</a></td><td>38179</td><td>63</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_010154.html">37</a></td><td>Acidianus convivator</td><td>Archaea</td><td>dsDNA viruses, no RNA stage</td><td>Ligamenvirales</td><td>Lipothrixviridae</td><td>Betalipothrixvirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=512792" target="_blank">Acidianus filamentous virus 9 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_010537" target="_blank">NC_010537 ➚</a></td><td>41172</td><td>75</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_010537.html">43</a></td><td>Acidianus uzoniensis</td><td>Archaea</td><td>dsDNA viruses, no RNA stage</td><td>Ligamenvirales</td><td>Lipothrixviridae</td><td>Betalipothrixvirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=309181" target="_blank">Acidianus rod-shaped virus 1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_009965" target="_blank">NC_009965 ➚</a></td><td>24655</td><td>41</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_009965.html">21</a></td><td>Acidianus sp. Acii26</td><td>Archaea</td><td>dsDNA viruses, no RNA stage</td><td>Ligamenvirales</td><td>Rudiviridae</td><td>Rudivirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1732175" target="_blank">Acidianus rod-shaped virus 2 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_029314" target="_blank">NC_029314 ➚</a></td><td>29763</td><td>44</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_029314.html">27</a></td><td>Sulfolobales</td><td>Archaea</td><td>dsDNA viruses, no RNA stage</td><td>Ligamenvirales</td><td>Rudiviridae</td><td>Rudivirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=693629" target="_blank">Acidianus spindle-shaped virus 1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_013585" target="_blank">NC_013585 ➚</a></td><td>24186</td><td>41</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_013585.html">21</a></td><td>Acidianus brierleyi DSM1651</td><td>Archaea</td><td>dsDNA viruses, no RNA stage</td><td>NA</td><td>Fuselloviridae</td><td>Betafusellovirus</td></tr>
+
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1797140" target="_blank">Acidianus tailed spindle virus ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_029316" target="_blank">NC_029316 ➚</a></td><td>70812</td><td>99</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_029316.html">42</a></td><td>Acidianus sp. CHAS</td><td>Archaea</td><td>dsDNA viruses, no RNA stage</td><td>NA</td><td>Bicaudaviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=315953" target="_blank">Acidianus two-tailed virus ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_007409" target="_blank">NC_007409 ➚</a></td><td>62730</td><td>73</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_007409.html">25</a></td><td>Acidianus convivator</td><td>Archaea</td><td>dsDNA viruses, no RNA stage</td><td>NA</td><td>Bicaudaviridae</td><td>Bicaudavirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1229761" target="_blank">Acidithiobacillus phage AcaML1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/JX507079" target="_blank">JX507079 ➚</a></td><td>59363</td><td>73</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/JX507079.html">35</a></td><td>Acidithiobacillus caldus ATCC 51756</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1187128" target="_blank">Acinetobacter bacteriophage AP22 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_017984" target="_blank">NC_017984 ➚</a></td><td>46387</td><td>89</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_017984.html">70</a></td><td>Acinetobacter baumannii</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=279006" target="_blank">Acinetobacter phage 133 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_015250" target="_blank">NC_015250 ➚</a></td><td>159801</td><td>258</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_015250.html">161</a></td><td>Acinetobacter johnsonii</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>T4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=889876" target="_blank">Acinetobacter phage AB1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/HM368260" target="_blank">HM368260 ➚</a></td><td>45159</td><td>89</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/HM368260.html">66</a></td><td>Acinetobacter baumannii</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1718840" target="_blank">Acinetobacter phage Ab105-1phi ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KT588074" target="_blank">KT588074 ➚</a></td><td>41496</td><td>63</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KT588074.html">39</a></td><td>Acinetobacter baumannii Ab105</td><td>Bacteria</td><td>unclassified phages</td><td>NA</td><td>NA</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1718841" target="_blank">Acinetobacter phage Ab105-2phi ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KT588075" target="_blank">KT588075 ➚</a></td><td>52456</td><td>80</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KT588075.html">53</a></td><td>Acinetobacter baumannii Ab105</td><td>Bacteria</td><td>unclassified phages</td><td>NA</td><td>NA</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1718842" target="_blank">Acinetobacter phage Ab105-3phi ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KT588073" target="_blank">KT588073 ➚</a></td><td>63785</td><td>77</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KT588073.html">49</a></td><td>Acinetobacter baumannii Ab105</td><td>Bacteria</td><td>unclassified phages</td><td>NA</td><td>NA</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1273713" target="_blank">Acinetobacter phage AB3 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_021337" target="_blank">NC_021337 ➚</a></td><td>31185</td><td>29</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_021337.html">24</a></td><td>Acinetobacter baumannii</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1235824" target="_blank">Acinetobacter phage Abp1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_021316" target="_blank">NC_021316 ➚</a></td><td>42185</td><td>54</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_021316.html">44</a></td><td>Acinetobacter baumannii</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=762660" target="_blank">Acinetobacter phage Ac42 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_014660" target="_blank">NC_014660 ➚</a></td><td>167716</td><td>257</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_014660.html">159</a></td><td>NA</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>T4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=760732" target="_blank">Acinetobacter phage Acj61 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_014661" target="_blank">NC_014661 ➚</a></td><td>164093</td><td>243</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_014661.html">173</a></td><td>Acinetobacter johnsonii</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>T4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=760939" target="_blank">Acinetobacter phage Acj9 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_014663" target="_blank">NC_014663 ➚</a></td><td>169947</td><td>254</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_014663.html">178</a></td><td>Acinetobacter johnsonii</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>T4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=154784" target="_blank">Acinetobacter phage AP205 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_002700" target="_blank">NC_002700 ➚</a></td><td>4268</td><td>4</td><td>0</td><td>Acinetobacter genomosp. 16</td><td>Bacteria</td><td>ssRNA viruses</td><td>NA</td><td>Leviviridae</td><td>Levivirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1221835" target="_blank">Acinetobacter phage Bphi-B1251 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_019541" target="_blank">NC_019541 ➚</a></td><td>45364</td><td>63</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_019541.html">49</a></td><td>Acinetobacter baumannii YMC/09/02/B1251</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1647373" target="_blank">Acinetobacter phage Fri1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_028848" target="_blank">NC_028848 ➚</a></td><td>41805</td><td>54</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_028848.html">44</a></td><td>Acinetobacter baumannii 28</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1458669" target="_blank">Acinetobacter phage IME_AB3 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_023590" target="_blank">NC_023590 ➚</a></td><td>43050</td><td>57</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_023590.html">33</a></td><td>Acinetobacter baumannii</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>NA</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1735582" target="_blank">Acinetobacter phage IME-200 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_028987" target="_blank">NC_028987 ➚</a></td><td>41243</td><td>52</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_028987.html">47</a></td><td>Acinetobacter baumannii</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1243183" target="_blank">Acinetobacter phage IME-AB2 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/JX976549" target="_blank">JX976549 ➚</a></td><td>43665</td><td>82</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/JX976549.html">68</a></td><td>Acinetobacter baumannii</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1406779" target="_blank">Acinetobacter phage Petty ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_023570" target="_blank">NC_023570 ➚</a></td><td>40739</td><td>45</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_023570.html">34</a></td><td>Acinetobacter baumannii AU0783</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>Phikmvlikevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=691318" target="_blank">Acinetobacter phage phiAB1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_028675" target="_blank">NC_028675 ➚</a></td><td>41526</td><td>46</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_028675.html">31</a></td><td>Acinetobacter baumannii M68316</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1229760" target="_blank">Acinetobacter phage phiAC-1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_028995" target="_blank">NC_028995 ➚</a></td><td>43216</td><td>83</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_028995.html">47</a></td><td>Acinetobacter soli KZ-1</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1406780" target="_blank">Acinetobacter phage Presley ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_023581" target="_blank">NC_023581 ➚</a></td><td>77792</td><td>95</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_023581.html">36</a></td><td>Acinetobacter baumannii M2</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>N4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1481186" target="_blank">Acinetobacter phage vB_AbaM_Acibel004 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_025462" target="_blank">NC_025462 ➚</a></td><td>99730</td><td>158</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_025462.html">62</a></td><td>Acinetobacter baumannii</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1605379" target="_blank">Acinetobacter phage vB_AbaM_phiAbaA1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KJ628499" target="_blank">KJ628499 ➚</a></td><td>104906</td><td>170</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KJ628499.html">60</a></td><td>Acinetobacter baumannii Acb8/09</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1481187" target="_blank">Acinetobacter phage vB_AbaP_Acibel007 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_025457" target="_blank">NC_025457 ➚</a></td><td>42654</td><td>53</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_025457.html">31</a></td><td>Acinetobacter baumannii</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1701807" target="_blank">Acinetobacter phage vB_AbaP_PD-6A3 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_028684" target="_blank">NC_028684 ➚</a></td><td>41563</td><td>48</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_028684.html">39</a></td><td>Acinetobacter baumannii</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1701808" target="_blank">Acinetobacter phage vB_AbaP_PD-AB9 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_028679" target="_blank">NC_028679 ➚</a></td><td>40938</td><td>48</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_028679.html">37</a></td><td>Acinetobacter baumannii</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1505225" target="_blank">Acinetobacter phage YMC-13-01-C62 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_024785" target="_blank">NC_024785 ➚</a></td><td>44844</td><td>87</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_024785.html">68</a></td><td>Acinetobacter baumannii YMC/13/01/C62</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1628721" target="_blank">Acinetobacter phage YMC11/11/R3177 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KP861230" target="_blank">KP861230 ➚</a></td><td>47575</td><td>81</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KP861230.html">50</a></td><td>Acinetobacter sp.</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1628722" target="_blank">Acinetobacter phage YMC11/12/R1215 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KP861231" target="_blank">KP861231 ➚</a></td><td>44866</td><td>87</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KP861231.html">65</a></td><td>Acinetobacter sp.</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1628720" target="_blank">Acinetobacter phage YMC11/12/R2315 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_028855" target="_blank">NC_028855 ➚</a></td><td>44846</td><td>86</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_028855.html">65</a></td><td>Acinetobacter sp.</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1560342" target="_blank">Acinetobacter phage YMC13/03/R2096 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_027332" target="_blank">NC_027332 ➚</a></td><td>98170</td><td>168</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_027332.html">60</a></td><td>Acinetobacter baumannii YMC13/03/R2096</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1049283" target="_blank">Acinetobacter phage ZZ1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_018087" target="_blank">NC_018087 ➚</a></td><td>166687</td><td>257</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_018087.html">166</a></td><td>NA</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>T4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=338473" target="_blank">Actinomyces phage Av-1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_009643" target="_blank">NC_009643 ➚</a></td><td>17171</td><td>22</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_009643.html">6</a></td><td>Actinomyces naeslundii</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=279303" target="_blank">Actinoplanes phage phiAsp2 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_005885" target="_blank">NC_005885 ➚</a></td><td>58638</td><td>77</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_005885.html">22</a></td><td>Actinoplanes sp. SN223/29</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=233894" target="_blank">Aeromonas phage 25 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_008208" target="_blank">NC_008208 ➚</a></td><td>161475</td><td>242</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_008208.html">128</a></td><td>Aeromonas salmonicida</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>T4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=321023" target="_blank">Aeromonas phage 31 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_007022" target="_blank">NC_007022 ➚</a></td><td>172963</td><td>253</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_007022.html">188</a></td><td>Aeromonas salmonicida</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>T4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=115987" target="_blank">Aeromonas phage 44RR2.8t ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_005135" target="_blank">NC_005135 ➚</a></td><td>173591</td><td>255</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_005135.html">188</a></td><td>Aeromonas salmonicida</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>T4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=260149" target="_blank">Aeromonas phage 65 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_015251" target="_blank">NC_015251 ➚</a></td><td>235229</td><td>440</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_015251.html">201</a></td><td>Aeromonas salmonicida</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>T4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=227470" target="_blank">Aeromonas phage Aeh1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_005260" target="_blank">NC_005260 ➚</a></td><td>233234</td><td>353</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_005260.html">291</a></td><td>Aeromonas hydrophila</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>T4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1198014" target="_blank">Aeromonas phage Aes012 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_020879" target="_blank">NC_020879 ➚</a></td><td>161978</td><td>243</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_020879.html">155</a></td><td>Aeromonas sp.</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>T4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1198013" target="_blank">Aeromonas phage Aes508 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_019543" target="_blank">NC_019543 ➚</a></td><td>160646</td><td>235</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_019543.html">145</a></td><td>Aeromonas salmonicida</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>T4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1204516" target="_blank">Aeromonas phage CC2 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_019538" target="_blank">NC_019538 ➚</a></td><td>231743</td><td>428</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_019538.html">205</a></td><td>Aeromonas hydrophila</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>T4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1505227" target="_blank">Aeromonas phage pAh6-C ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_025459" target="_blank">NC_025459 ➚</a></td><td>53744</td><td>86</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_025459.html">40</a></td><td>Aeromonas hydrophila JUNAH</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=879628" target="_blank">Aeromonas phage phiAS4 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_014635" target="_blank">NC_014635 ➚</a></td><td>163875</td><td>277</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_014635.html">184</a></td><td>Aeromonas salmonicida</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>T4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=879630" target="_blank">Aeromonas phage phiAS5 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_014636" target="_blank">NC_014636 ➚</a></td><td>225268</td><td>346</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_014636.html">295</a></td><td>Aeromonas salmonicida</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>T4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1141132" target="_blank">Aeromonas phage phiAS7 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_019528" target="_blank">NC_019528 ➚</a></td><td>41572</td><td>52</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_019528.html">37</a></td><td>Aeromonas salmonicida subsp. salmonicida</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=393598" target="_blank">Aeromonas phage phiO18P ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_009542" target="_blank">NC_009542 ➚</a></td><td>33985</td><td>45</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_009542.html">34</a></td><td>Aeromonas media</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>Hpunalikevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=926067" target="_blank">Aeromonas phage PX29 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_023688" target="_blank">NC_023688 ➚</a></td><td>222006</td><td>335</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_023688.html">292</a></td><td>Aeromonas salmonicida</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>T4likevirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1127514" target="_blank">Aeromonas phage vB_AsaM-56 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_019527" target="_blank">NC_019527 ➚</a></td><td>43551</td><td>83</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_019527.html">46</a></td><td>Aeromonas salmonicida</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1032474" target="_blank">Aeropyrum pernix ovoid virus 1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_028256" target="_blank">NC_028256 ➚</a></td><td>13769</td><td>21</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_028256.html">2</a></td><td>Aeropyrum pernix K1</td><td>Archaea</td><td>dsDNA viruses, no RNA stage</td><td>NA</td><td>Guttaviridae</td><td>Betaguttavirus</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1032473" target="_blank">Aeropyrum pernix spindle-shaped virus 1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_028268" target="_blank">NC_028268 ➚</a></td><td>38049</td><td>53</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_028268.html">4</a></td><td>Aeropyrum pernix K1</td><td>Archaea</td><td>unclassified archaeal viruses</td><td>NA</td><td>NA</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1161931" target="_blank">Agrobacterium phage 7-7-1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_019519" target="_blank">NC_019519 ➚</a></td><td>69391</td><td>127</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_019519.html">31</a></td><td>Agrobacterium sp. H13-3</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1300004" target="_blank">Alteromonas phage vB_AmaP_AD45-P1 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_021532" target="_blank">NC_021532 ➚</a></td><td>103910</td><td>131</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_021532.html">37</a></td><td>Alteromonas macleodii str. 'Balearic Sea AD45'</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1300005" target="_blank">Alteromonas phage vB_AmaP_AD45-P2 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KF005320" target="_blank">KF005320 ➚</a></td><td>104036</td><td>132</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KF005320.html">37</a></td><td>Alteromonas macleodii str. 'Balearic Sea AD45'</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1300006" target="_blank">Alteromonas phage vB_AmaP_AD45-P3 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KF005318" target="_blank">KF005318 ➚</a></td><td>101724</td><td>126</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KF005318.html">37</a></td><td>Alteromonas macleodii str. 'Balearic Sea AD45'</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1300007" target="_blank">Alteromonas phage vB_AmaP_AD45-P4 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KF005319" target="_blank">KF005319 ➚</a></td><td>100619</td><td>125</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KF005319.html">37</a></td><td>Alteromonas macleodii str. 'Balearic Sea AD45'</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1357732" target="_blank">Anabaena phage A-4L ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_024358" target="_blank">NC_024358 ➚</a></td><td>41750</td><td>41</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_024358.html">16</a></td><td>Anabaena variabilis</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Podoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=416419" target="_blank">Archaeal BJ1 virus ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_008695" target="_blank">NC_008695 ➚</a></td><td>42271</td><td>70</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_008695.html">9</a></td><td>Halorubrum</td><td>Archaea</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772291" target="_blank">Arthrobacter phage Amigo ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160638" target="_blank">KU160638 ➚</a></td><td>59173</td><td>86</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160638.html">24</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772292" target="_blank">Arthrobacter phage Anansi ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160639" target="_blank">KU160639 ➚</a></td><td>58848</td><td>86</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160639.html">24</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1796994" target="_blank">Arthrobacter phage BarretLemon ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU647629" target="_blank">KU647629 ➚</a></td><td>51290</td><td>79</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU647629.html">35</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772293" target="_blank">Arthrobacter phage Bennie ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160640" target="_blank">KU160640 ➚</a></td><td>43074</td><td>63</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160640.html">21</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1701798" target="_blank">Arthrobacter phage Brent ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KT365401" target="_blank">KT365401 ➚</a></td><td>49879</td><td>74</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KT365401.html">34</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772294" target="_blank">Arthrobacter phage CapnMurica ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160641" target="_blank">KU160641 ➚</a></td><td>58159</td><td>88</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160641.html">45</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772295" target="_blank">Arthrobacter phage Circum ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160642" target="_blank">KU160642 ➚</a></td><td>58353</td><td>99</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160642.html">52</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1698361" target="_blank">Arthrobacter phage Decurro ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/NC_028692" target="_blank">NC_028692 ➚</a></td><td>15524</td><td>25</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/NC_028692.html">13</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772296" target="_blank">Arthrobacter phage DrRobert ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160643" target="_blank">KU160643 ➚</a></td><td>42601</td><td>59</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160643.html">21</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772326" target="_blank">Arthrobacter phage Galaxy ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160644" target="_blank">KU160644 ➚</a></td><td>37809</td><td>65</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160644.html">28</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772297" target="_blank">Arthrobacter phage Glenn ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160645" target="_blank">KU160645 ➚</a></td><td>44389</td><td>64</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160645.html">22</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772298" target="_blank">Arthrobacter phage Gordon ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160646" target="_blank">KU160646 ➚</a></td><td>58279</td><td>89</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160646.html">45</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772299" target="_blank">Arthrobacter phage Gorgeous ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160647" target="_blank">KU160647 ➚</a></td><td>58979</td><td>86</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160647.html">24</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772300" target="_blank">Arthrobacter phage HunterDalle ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160648" target="_blank">KU160648 ➚</a></td><td>43336</td><td>60</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160648.html">21</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772301" target="_blank">Arthrobacter phage Immaculata ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160649" target="_blank">KU160649 ➚</a></td><td>43661</td><td>62</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160649.html">20</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772302" target="_blank">Arthrobacter phage Jasmine ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160650" target="_blank">KU160650 ➚</a></td><td>46723</td><td>58</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160650.html">11</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772327" target="_blank">Arthrobacter phage Jawnski ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160651" target="_blank">KU160651 ➚</a></td><td>49419</td><td>73</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160651.html">34</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1698362" target="_blank">Arthrobacter phage Jessica ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KT355473" target="_blank">KT355473 ➚</a></td><td>15556</td><td>25</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KT355473.html">13</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772303" target="_blank">Arthrobacter phage Joann ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160652" target="_blank">KU160652 ➚</a></td><td>44183</td><td>63</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160652.html">21</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1796995" target="_blank">Arthrobacter phage KellEzio ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU647626" target="_blank">KU647626 ➚</a></td><td>58871</td><td>98</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU647626.html">17</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1796996" target="_blank">Arthrobacter phage Kitkat ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU647627" target="_blank">KU647627 ➚</a></td><td>58560</td><td>100</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU647627.html">17</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772304" target="_blank">Arthrobacter phage Korra ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160653" target="_blank">KU160653 ➚</a></td><td>43704</td><td>62</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160653.html">23</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772305" target="_blank">Arthrobacter phage Laroye ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160654" target="_blank">KU160654 ➚</a></td><td>60005</td><td>99</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160654.html">22</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772306" target="_blank">Arthrobacter phage Maggie ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160655" target="_blank">KU160655 ➚</a></td><td>15556</td><td>26</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160655.html">13</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772307" target="_blank">Arthrobacter phage Martha ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160656" target="_blank">KU160656 ➚</a></td><td>51027</td><td>77</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160656.html">35</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772308" target="_blank">Arthrobacter phage Moloch ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160657" target="_blank">KU160657 ➚</a></td><td>15630</td><td>26</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160657.html">13</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1796997" target="_blank">Arthrobacter phage Mudcat ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU647628" target="_blank">KU647628 ➚</a></td><td>59443</td><td>95</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU647628.html">53</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772309" target="_blank">Arthrobacter phage Muttlie ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160658" target="_blank">KU160658 ➚</a></td><td>15524</td><td>26</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160658.html">13</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772310" target="_blank">Arthrobacter phage Preamble ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160659" target="_blank">KU160659 ➚</a></td><td>43374</td><td>64</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160659.html">21</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772328" target="_blank">Arthrobacter phage PrincessTrina ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160660" target="_blank">KU160660 ➚</a></td><td>70265</td><td>112</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160660.html">50</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772311" target="_blank">Arthrobacter phage Pumancara ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160661" target="_blank">KU160661 ➚</a></td><td>42830</td><td>61</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160661.html">21</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772312" target="_blank">Arthrobacter phage RAP15 ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160662" target="_blank">KU160662 ➚</a></td><td>44259</td><td>64</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160662.html">22</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772313" target="_blank">Arthrobacter phage Rings ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160663" target="_blank">KU160663 ➚</a></td><td>59167</td><td>88</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160663.html">24</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772314" target="_blank">Arthrobacter phage Salgado ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160664" target="_blank">KU160664 ➚</a></td><td>59807</td><td>99</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160664.html">22</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1698363" target="_blank">Arthrobacter phage Sandman ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KT355475" target="_blank">KT355475 ➚</a></td><td>15630</td><td>25</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KT355475.html">13</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772315" target="_blank">Arthrobacter phage Sonny ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160665" target="_blank">KU160665 ➚</a></td><td>50909</td><td>77</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160665.html">34</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Myoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772316" target="_blank">Arthrobacter phage SorJuana ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160666" target="_blank">KU160666 ➚</a></td><td>58979</td><td>86</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160666.html">24</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		<tr><td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=1772317" target="_blank">Arthrobacter phage Stratus ➚</a></td><td><a href="http://www.ncbi.nlm.nih.gov/nuccore/KU160667" target="_blank">KU160667 ➚</a></td><td>15630</td><td>26</td><td><a href="http://dmk-brain.ecn.uiowa.edu/pVOGs/genomes/KU160667.html">13</a></td><td>Arthrobacter sp. ATCC 21022</td><td>Bacteria</td><td>dsDNA viruses, no RNA stage</td><td>Caudovirales</td><td>Siphoviridae</td><td>NA</td></tr>
+		</tbody>
+	</table>
+	</body>
+</html>
