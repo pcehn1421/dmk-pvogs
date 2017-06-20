@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title> AJAX </title>>
+    <title> AJAX </title>
     <script langauge="JavaScript" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js">
     </script>
 		<script language="JavaScript" type="text/javascript" src="./support/jquery.dataTables.min.js"></script>
@@ -9,8 +9,11 @@
     $(document).ready(function() {
       $('#example').DataTable( {
         "ajax" : {
-          "url" : './pVOGS_JSON.txt',
-          "dataSrc" : "demo"
+          "dataType" : 'text',
+          "url" : './helper/targetSample.txt',
+          "dataSrc" : function (json) {
+            return $.parseJSON(json)
+          }
         }
       } );
     } );

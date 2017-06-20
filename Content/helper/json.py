@@ -1,5 +1,5 @@
-sourceFile = "./genome.txt"
-targetFile = "./target.txt"
+sourceFile = "./sample.txt"
+targetFile = "./targetSample.txt"
 
 t = open(targetFile, 'w').close()
 t = open(targetFile, 'w')
@@ -13,7 +13,7 @@ with open(sourceFile, 'r') as file:
         for word in line.split('\t'):
             t.write('\t\t\t"')
             t.write(word[:-1])
-            t.write('"')
+            t.write(' "')
             counter = counter + 1
             if counter != 15:
                 t.write(",\n")
