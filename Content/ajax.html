@@ -6,15 +6,10 @@
 		<script language="JavaScript" type="text/javascript" src="./support/jquery.dataTables.min.js"></script>
 		<script language="JavaScript" type="text/javascript" src="./support/json2.js"></script>
     <script language="JavaScript" type="text/javascript" class="init">
+    
     $(document).ready(function() {
       $('#example').DataTable( {
-        "ajax" : {
-          "dataType" : 'text',
-          "url" : './helper/targetSample.txt',
-          "dataSrc" : function (json) {
-            return $.parseJSON(json)
-          }
-        }
+        "ajax" :  'http://localhost/pVOGS_JSON.txt'
       } );
     } );
 
