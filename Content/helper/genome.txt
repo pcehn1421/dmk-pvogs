@@ -1,3 +1,4 @@
+Counter 1 3 4 5+6 8 9 10 11 12 13 14
 Acaryochloris phage A-HIS1	645116	FN436268	1..55653	95	2	13	Genbank	Acaryochloris marina strain MBIC11017	Bacteria	dsDNA viruses, no RNA stage	Caudovirales	Siphoviridae	NA	Acaryochloris phage A-HIS1
 Acaryochloris phage A-HIS2	645117	FN436269	1..57391	104	2	11	Genbank	Acaryochloris marina strain MBIC11017	Bacteria	dsDNA viruses, no RNA stage	Caudovirales	Siphoviridae	NA	Acaryochloris phage A-HIS2
 Acholeplasma phage L2	46014	NC_001447	1..11965	14	4	3	Refseq	Acholeplasma laidlawii	Bacteria	dsDNA viruses, no RNA stage	NA	Plasmaviridae	Plasmavirus	Acholeplasma phage L2
