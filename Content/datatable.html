@@ -2,202 +2,50 @@
 <html>
 
 <head>
-	<title>DataTables example</title>
+	<title>Prokaryotic Virus Orthologous Groups
+	</title>
 
-	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-	<!--
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-2.2.4/dt-1.10.15/datatables.min.css" />
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.3.1/buttons.datatables.min.css" />
-    <script langauge="JavaScript" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-		<script language="JavaScript" type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-2.2.4/dt-1.10.15/datatables.min.js"></script>
-		<script language="JavaScript" type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
-		<script language="JavaScript" type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
-		<script language="JavaScript" type="text/javascript" src="https://cdn.datatables.net/select/1.2.2/js/dataTables.select.min.js"></script>
-		<script language="JavaScript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/json2/20160511/json2.js"></script>
-	-->
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
+	<link rel="stylesheet" type="text/css" href="genometable_files/viewsource.css">
+	<link rel="stylesheet" type="text/css" href="./helper/datatables.min.css">
 
+	<script type="text/javascript" src="./helper/datatables.min.js"></script>
+	<script type="text/javascript" src="./helper/json2.js"></script>
+	<script type="text/javascript" src="./helper/buttons.colVis.min.js"></script>
+	<script type="text/javascript" src="./helper/buttons.flash.min.js"></script>
+	<script type="text/javascript" src="./helper/pdfmake.min.js"></script>
+	<script type="text/javascript" src="./helper/vfs_fonts.js"></script>
+	<script type="text/javascript" src="./helper/buttons.html5.min.js"></script>
+	<script type="text/javascript" src="./helper/buttons.print.min.js"></script>
+	<script type="text/javascript" src="./helper/jszip.min.js"></script>
 
-	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-2.2.4/dt-1.10.15/af-2.2.0/b-1.3.1/b-colvis-1.3.1/b-print-1.3.1/se-1.2.2/datatables.min.css" />
-	<script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-2.2.4/dt-1.10.15/af-2.2.0/b-1.3.1/b-colvis-1.3.1/b-print-1.3.1/se-1.2.2/datatables.min.js"></script>
-	<script language="JavaScript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/json2/20160511/json2.js"></script>
-	<script language="JavaScript" type="text/javascript" src="./helper/buttons.flash.min.js"></script>
-	<script language="JavaScript" type="text/javascript" src="./helper/pdfmake.min.js"></script>
-	<script language="JavaScript" type="text/javascript" src="./helper/vfs_fonts.js"></script>
-	<script language="JavaScript" type="text/javascript" src="./helper/buttons.html5.min.js"></script>
-	<script language="JavaScript" type="text/javascript" src="./helper/buttons.print.min.js"></script>
-	<script language="JavaScript" type="text/javascript" src="./helper/jszip.min.js"></script>
-	<script type="text/javascript" class="init">
-		//rangeSearch:
-		$.fn.dataTable.ext.search.push(
-			function(settings, data, dataIndex) {
-				var min = parseInt($('#min').val(), 10);
-				var max = parseInt($('#max').val(), 10);
-				var nopVOG = parseFloat(data[4]) || 0; // use data for the age column
+	<script type="text/javascript" src="./helper/myjs.js"></script>
 
-				if ((isNaN(min) && isNaN(max)) ||
-					(isNaN(min) && nopVOG <= max) ||
-					(min <= nopVOG && isNaN(max)) ||
-					(min <= nopVOG && nopVOG <= max)) {
-					return true;
-				}
-				return false;
-			}
-		);
-
-		$('#min, #max').keyup(function() {
-			table.draw();
-		});
-
-
-
-		function filterColumn(i) {
-			$('#example').DataTable().column(i).search(
-				$('input', $('.filter th')[i]).val(),
-				$('#input').prop('checked', true),
-			).draw();
-		}
-
-		$(document).ready(function() {
-
-			$('#rangeLink').click(function() {
-				$('#rangeSearch').toggle('slow');
-			});
-
-			var table = $('#example').DataTable({
-				select: true,
-				dom: 'Bfrtip',
-				buttons: [
-					{
-						extend: 'pdf',
-						text: 'pdf all'
-					},
-					{
-						extend: 'pdf',
-						text: 'pdf selected',
-						exportOptions: {
-							modifier: {
-								selected: true
-							}
-						}
-					},
-					{
-						extend: 'copy',
-						text: 'copy all'
-					},
-					{
-						extend: 'copy',
-						text: 'copy selected',
-						exportOptions: {
-							modifier: {
-								selected: true
-							}
-						}
-					},
-					{
-						extend: 'print',
-						text: 'print all'
-					},
-					{
-						extend: 'print',
-						text: 'print selected',
-						exportOptions: {
-							modifier: {
-								selected: true
-							}
-						}
-					},
-					{
-						extend: 'csv',
-						text: 'csv all'
-					},
-					{
-						extend: 'csv',
-						text: 'csv selected',
-						exportOptions: {
-							modifier: {
-								selected: true
-							}
-						}
-					},
-					{
-						extend: 'excel',
-						text: 'excel all'
-					},
-					{
-						extend: 'excel',
-						text: 'excel selected',
-						exportOptions: {
-							modifier: {
-								selected: true
-							}
-						}
-					}
-
-
-				],
-
-				ajax: 'http://localhost:8000/Content/helper/JSONSample.txt',
-
-				initComplete: function() {
-					this.api().columns([6, 7, 8, 9, 10]).every(function() {
-						var column = this;
-
-						var selectHeader = $('<select><option value=""></option></select>')
-							.appendTo($(column.header()).empty())
-							.on('change', function() {
-								var val = $.fn.dataTable.util.escapeRegex(
-									$(this).val()
-								);
-
-								column
-									.search(val ? '^' + val + '$' : '', true, false)
-									.draw();
-							});
-
-						column.data().unique().sort().each(function(d, j) {
-							selectHeader.append('<option value="' + d + '">' + d + '</option>');
-						});
-
-					});
-
-					$('#example .filter th').each(function() {
-
-						var title = $('#example tfoot th').eq($(this).index()).text();
-						$(this).html('<input type="text" placeholder="Search ' + title + '" />');
-
-					});
-
-					table.columns().eq(0).each(function(colIdx) {
-						$('input', $('.filter th')[colIdx]).on('keyup change', function() {
-							filterColumn(colIdx);
-						});
-					});
-
-					$('input').on('keyup click', function() {
-						filterColumn($(this).parents('tr').attr('data-columnindex'));
-					});
-				}
-			});
-
-/**		Delete selected rows
-			$('#example tbody').on('click', 'tr', function() {
-				if ($(this).hasClass('selected')) {
-					$(this).removeClass('selected');
-				} else {
-					table.$('tr.selected').removeClass('selected');
-					$(this).addClass('selected');
-				}
-			});
-
-			$('button').click(function() {
-				table.row('.selected').remove().draw(false);
-			});**/
-		});
-	</script>
 </head>
 
 <body>
+	<header id="GenomeTables">
+
+		<h1>Prokaryotic Virus Orthologous Groups</h1>
+
+	</header>
+
+	<article>
+
+		<h2>Genome Table - Information regarding all prokaryotic virus genomes analyzed in the pVOGs database:</h2>
+
+		<p>* NOTE: The following virus genomic data was current as of May 2016. However, taxonomic nomenclature of viruses changes over time (e.g., <a href="http://link.springer.com/article/10.1007/s00705-015-2728-0" target="_blank">Taxonomy of prokaryotic viruses: update from the ICTV bacterial and archaeal viruses subcommittee &#10138</a>),
+			and already these names no longer reflect the current status as approved by the <a href="http://www.ictvonline.org/" target="_blank">International Committee on Taxonomy of Viruses &#10138</a>. Other data associated with these genomes such as gene annotations
+			(functional information, start/stop coordinates, metadata, or even their presence/absence in a genome) may also change over time. Clicking on the link of species name or genome accession will redirect you to the <a href="https://www.ncbi.nlm.nih.gov/taxonomy"
+			  target="_blank">NCBI Taxonomy &#10138</a> or <a href="https://www.ncbi.nlm.nih.gov/nuccore" target="_blank">NCBI Nucleotide &#10138</a> database, respectively, containing the most up-to-date data that NCBI has available.</p>
+
+		<p id="para">* NOTE: The following search box is a <i>"contains character"</i> rather than an <i>"exact match"</i> tool. For instance, searching for "T4" in the genus column would match both "T4likevirus" and "Schizot4likevirus".</p>
+
+	</article>
+
+
 	<button id="rangeLink" onclick="toggleRange();">Range Search</button>
 	<table id="rangeSearch">
 		<tbody>
@@ -211,54 +59,81 @@
 			</tr>
 		</tbody>
 	</table>
-	</br>
-	<table id="example" class="display" style="width: 100%;">
-		<thead>
-			<tr>
-				<th>Organism Name</th>
-				<th>Genome Accession</th>
-				<th>Genome Size (bp)</th>
-				<th>Proteins</th>
-				<th># of VOGs</th>
-				<th>Host</th>
-				<th>Host Domain</th>
-				<th>Genetic Material</th>
-				<th>Order</th>
-				<th>Family</th>
-				<th>Genus</th>
-			</tr>
-		</thead>
-		<tfoot class="filter" style="display: table-header-group">
-			<tr>
-				<th>Organism Name</th>
-				<th>Genome Accession</th>
-				<th>Genome Size (bp)</th>
-				<th>Proteins</th>
-				<th># of VOGs</th>
-				<th>Host</th>
-				<th>Host Domain</th>
-				<th>Genetic Material</th>
-				<th>Order</th>
-				<th>Family</th>
-				<th>Genus</th>
-			</tr>
-		</tfoot>
-		<tfoot>
-			<tr>
-				<th>Organism Name</th>
-				<th>Genome Accession</th>
-				<th>Genome Size (bp)</th>
-				<th>Proteins</th>
-				<th># of VOGs</th>
-				<th>Host</th>
-				<th>Host Domain</th>
-				<th>Genetic Material</th>
-				<th>Order</th>
-				<th>Family</th>
-				<th>Genus</th>
-			</tr>
-		</tfoot>
-	</table>
+
+	<table id="example" class="dataTable display" role="grid" style="width:100%;" cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th>Organism Name</th>
+							<th>Genome Accession</th>
+							<th>Genome Size (bp)</th>
+							<th>Proteins</th>
+							<th># of VOGs</th>
+							<th>Host</th>
+							<th>Host Domain</th>
+							<th>Genetic Material</th>
+							<th>Order</th>
+							<th>Family</th>
+							<th>Genus</th>
+						</tr>
+					</thead>
+					<tfoot class="filter" style="display: table-header-group">
+						<tr>
+							<th>Organism Name</th>
+							<th>Genome Accession</th>
+							<th>Genome Size (bp)</th>
+							<th>Proteins</th>
+							<th># of VOGs</th>
+							<th>Host</th>
+							<th>Host Domain</th>
+							<th>Genetic Material</th>
+							<th>Order</th>
+							<th>Family</th>
+							<th>Genus</th>
+						</tr>
+					</tfoot>
+					<tfoot>
+						<tr>
+							<th>Organism Name</th>
+							<th>Genome Accession</th>
+							<th>Genome Size (bp)</th>
+							<th>Proteins</th>
+							<th># of VOGs</th>
+							<th>Host</th>
+							<th>Host Domain</th>
+							<th>Genetic Material</th>
+							<th>Order</th>
+							<th>Family</th>
+							<th>Genus</th>
+						</tr>
+					</tfoot>
+				</table>
+
 </body>
+<center>
+	<div id="footer1">
+		<a href="home.html#"><b>HOME</b></a> |
+		<a href="genometable.html#"><b>GENOME TABLE</b></a> |
+		<a href="VOGbigtable.html#"><b>VOG TABLE</b></a> |
+		<a href="downloads.html#"><b>DOWNLOADS</b></a> |
+		<a href="newsupdate.html#"><b>NEWS & UPDATES</b></a> |
+		<a href="tutorial.html#"><b>TUTORIAL</b></a> |
+		<a href="#"><b>BACK TO TOP</b></a>
+	</div>
+</center>
+
+<hr>
+
+<td width=60% align=center>
+	<font color="#000000">
+		<font size=2>
+			<br>
+			<center>
+				<img src="phage-icon.png" width="70" height="80">
+				<center>
+					Prokaryotic Virus Orthologous Groups<br> Website updated in May 2017. Genomes updated in May 2016.<br>
+		</font>
+	</font>
+</td>
+</center>
 
 </html>
