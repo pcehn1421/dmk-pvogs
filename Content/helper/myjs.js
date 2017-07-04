@@ -19,8 +19,6 @@
     table.draw();
   });
 
-
-
   function filterColumn(i) {
     $('#example').DataTable().column(i).search(
       $('input', $('.filter th')[i]).val(),
@@ -29,14 +27,21 @@
   }
 
   $(document).ready(function() {
+    // generating header search boxes
+    $('#example .filter th').each(function() {
+      var title = $(this).text();
+      $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+    });
 
     $('#rangeLink').click(function() {
       $('#rangeSearch').toggle('slow');
     });
 
     var table = $('#example').DataTable({
-      lengthMenu: [[10,25,50,-1],[10,25,50,"All"]],
+      order: [[1, 'asc']],
+      lengthMenu: [[10, 25, 50, -1],[10, 25, 50, "All"]],
       select: true,
+      pagingType: "full_number",
       dom: 'Blfrtip',
       buttons: [
         'colvis',
@@ -113,7 +118,6 @@
           ]
         }
       ],
-
       ajax: './helper/sample/JSONSample.txt',
 
       initComplete: function() {
@@ -138,26 +142,23 @@
 
         });
 
-        $('#example .filter th').each(function() {
 
-          var title = $('#example tfoot th').eq($(this).index()).text();
-          $(this).html('<input type="text" placeholder="Search ' + title + '" />');
-
-        });
-
-        table.columns().eq(0).each(function(colIdx) {
-          $('input', $('.filter th')[colIdx]).on('keyup change', function() {
-            filterColumn(colIdx);
-          });
-        });
-
-        $('input').on('keyup click', function() {
-          filterColumn($(this).parents('tr').attr('data-columnindex'));
-        });
       }
     });
 
-    /**		Delete selected rows
+    table.columns().every(function() {
+      var that = this;
+
+      $('input', this.footer() ).on('keyup change', function() {
+        if( that.search() !== this.value) {
+          that.search(this.value)
+              .draw();
+        }
+      });
+
+    });
+        /**
+  	Delete selected rows
         $('#example tbody').on('click', 'tr', function() {
           if ($(this).hasClass('selected')) {
             $(this).removeClass('selected');
