@@ -27,7 +27,7 @@
     });
 
     var table = $('#example').DataTable({
-      "order": [[1, 'asc']],
+      "order": [[1, 'dsc']],
       "lengthMenu": [[10, 25, 50, -1],[10, 25, 50, "All"]],
       "select": true,
       "dom": 'Blfrtip',
@@ -106,7 +106,7 @@
           ]
         }
       ],
-      "ajax": "./helper/sample/JSONSample.txt",
+      "ajax": "./helper/sample/target.txt",
 
 
       initComplete: function() {
@@ -135,11 +135,14 @@
       }
     });
 
-
+var counter = 0;	
     // generating header search boxes
     $('#example .filter th').each(function() {
       var title = $(this).text();
+      if (counter < 6) {
       $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+    	}	
+      counter = counter + 1;
     });
 
     table.columns().every(function() {
