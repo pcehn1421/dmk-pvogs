@@ -19,31 +19,19 @@
     table.draw();
   });
 
-  function filterColumn(i) {
-    $('#example').DataTable().column(i).search(
-      $('input', $('.filter th')[i]).val(),
-      $('#input').prop('checked', true),
-    ).draw();
-  }
-
   $(document).ready(function() {
-    // generating header search boxes
-    $('#example .filter th').each(function() {
-      var title = $(this).text();
-      $(this).html('<input type="text" placeholder="Search ' + title + '" />');
-    });
+
 
     $('#rangeLink').click(function() {
       $('#rangeSearch').toggle('slow');
     });
 
     var table = $('#example').DataTable({
-      order: [[1, 'asc']],
-      lengthMenu: [[10, 25, 50, -1],[10, 25, 50, "All"]],
-      select: true,
-      pagingType: "full_number",
-      dom: 'Blfrtip',
-      buttons: [
+      "order": [[1, 'asc']],
+      "lengthMenu": [[10, 25, 50, -1],[10, 25, 50, "All"]],
+      "select": true,
+      "dom": 'Blfrtip',
+      "buttons": [
         'colvis',
         {
           extend: 'collection',
@@ -118,14 +106,15 @@
           ]
         }
       ],
-      ajax: './helper/sample/JSONSample.txt',
+      "ajax": "./helper/sample/JSONSample.txt",
+
 
       initComplete: function() {
         this.api().columns([6, 7, 8, 9, 10]).every(function() {
           var column = this;
 
-          var selectHeader = $('<select><option value=""></option></select>')
-            .appendTo($(column.header()).empty())
+          var selectFooter = $('<select><option value=""></option></select>')
+            .appendTo($(column.footer()).empty())
             .on('change', function() {
               var val = $.fn.dataTable.util.escapeRegex(
                 $(this).val()
@@ -137,13 +126,20 @@
             });
 
           column.data().unique().sort().each(function(d, j) {
-            selectHeader.append('<option value="' + d + '">' + d + '</option>');
+            selectFooter.append('<option value="' + d + '">' + d + '</option>');
           });
 
         });
 
 
       }
+    });
+
+
+    // generating header search boxes
+    $('#example .filter th').each(function() {
+      var title = $(this).text();
+      $(this).html('<input type="text" placeholder="Search ' + title + '" />');
     });
 
     table.columns().every(function() {
@@ -155,10 +151,16 @@
               .draw();
         }
       });
-
     });
-        /**
-  	Delete selected rows
+
+    $('#example tbody').on('click', 'tr', function() {
+      $(this).toggleClass('selected');
+    });
+
+    $('button').click(function(){
+      alert(table.rows('.selected').data().length+'row(s) selected');
+    });
+
         $('#example tbody').on('click', 'tr', function() {
           if ($(this).hasClass('selected')) {
             $(this).removeClass('selected');
@@ -170,5 +172,5 @@
 
         $('button').click(function() {
           table.row('.selected').remove().draw(false);
-        });**/
+        });
   });
