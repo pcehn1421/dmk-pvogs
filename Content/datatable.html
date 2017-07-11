@@ -8,12 +8,17 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-		<!-- my javascript and css !-->
 	<link rel="stylesheet" type="text/css" href="./DataTables/datatables.css"/>
-	<link rel="stylesheet" type="text/css" href="./helper/style.css" />
 
 	<script type="text/javascript" src="./helper/json2.js"></script>
 	<script type="text/javascript" src="./DataTables/datatables.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="./jquery-ui/jquery-ui.css" />
+	<script type="text/javascript" src="./jquery-ui/jquery-ui.js"></script>
+
+	<!-- my javascript and css !-->
+	<link rel="stylesheet" type="text/css" href="./helper/stylesheet_original.css" />
+	<link rel="stylesheet" type="text/css" href="./helper/style.css" />
 	<script type="text/javascript" src="./helper/myjs.js"></script>
 
 
@@ -40,23 +45,17 @@
 		<p id="para">* NOTE: The following search box is a <i>"contains character"</i> rather than an <i>"exact match"</i> tool. For instance, searching for "T4" in the genus column would match both "T4likevirus" and "Schizot4likevirus".</p>
 
 	</article>
+	<div id="rangeSearchWrapper">
+		<button id="rangeLink" onclick="toggleRange();">Range Search</button>
+		<input type="text" id="min" name="min">
+		<div id="slider"></div>
+		<input type="text" id="max" name="max">
 
 
-	<button id="rangeLink" onclick="toggleRange();">Range Search</button>
-	<table id="rangeSearch">
-		<tbody>
-			<tr>
-				<td>Minimum # of pVOGs:</td>
-				<td><input type="text" id="min" name="min"></td>
-			</tr>
-			<tr>
-				<td>Maximum # of pVOGs:</td>
-				<td><input type="text" id="max" name="max"></td>
-			</tr>
-		</tbody>
-	</table>
+	</div>
+	<div id="tableWrapper">
 
-	<table id="example" class="display" cellspacing="0" width="100%">
+	<table id="example" class="table" cellspacing="0" width="100%">
 		<thead>
 			<tr>
 				<th>Organism Name</th>
@@ -80,11 +79,11 @@
 				<th></th>
 				<th></th>
 				<th></th>
-				<th>Host Domain</th>
-				<th>Genetic Material</th>
-				<th>Order</th>
-				<th>Family</th>
-				<th>Genus</th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
 			</tr>
 		</tfoot>
 
@@ -105,6 +104,7 @@
 		</tfoot>
 	</table>
 
+	</div>
 	</div>
 </body>
 <center>
