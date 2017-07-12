@@ -1,9 +1,4 @@
-This repo contains several example files as well as some other things I have tried using javascript. </br>
-To make ajax work on your localhost, </br>
-&nbsp;&nbsp;&nbsp;&nbsp;Ubuntu: </br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;open terminal and go to the main directory </br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type in the following commands:</br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cd Content/ </br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;python -m SimpleHTTPServer </br>
-
-This enables you to test your code in your localhost </br>
+This repo contains the example files for pVOGs website.  </br>
+Content/datatable.html is the main file </br>
+Content/helper contains files I wrote to suppor the website, json.py converts a tsv file to a JSON file </br>
+Content/DataTables contains all the actual files for supporting the website, i.e., the css files and js files </br>
