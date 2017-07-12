@@ -1,12 +1,3 @@
-
-
-$('#slider').slider({
-	range: true,
-	min: 0,
-	max: 99,
-	values: [0,99],
-	step: 1
-});
 //rangeSearch with inputs
 $.fn.dataTable.ext.search.push(
   function(settings, data, dataIndex) {
@@ -120,10 +111,20 @@ $(document).ready(function() {
         ]
       }
     ],
-    ajax: "./helper/sample/target.txt",
+    ajax: "./helper/sample/JSONSample.txt",
     rowReorder : true,
     autoFill : true,
     columnDefs : [
+      {
+        targets : 0,
+        render : function(data) {
+          var split = data.split("|")
+          var name = split[0]
+          var id = split[1]
+          return '<a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id='
+            + id + '"">' + name +'</a>';
+        }
+      },
       {
         targets : 1,
         render : function(data) {
@@ -137,12 +138,12 @@ $(document).ready(function() {
           return 'See <a href="">' + data  + '</a> pVOGs';
         }
       },
-      {
+      /*{
         targets : 7,
         render : function(data) {
           return data.split(",").join(",<br />");
         }
-      },
+      },*/
       {
         targets : 8,
         render : function(data) {
@@ -157,7 +158,6 @@ $(document).ready(function() {
       },
 
     ],
-
     //initialize the table with the following cretirias
     initComplete: function() {
       //loading mechanism
@@ -181,7 +181,6 @@ $(document).ready(function() {
 
         column.data().unique().sort().each(function(d, j) {
           selectFooter.append('<option value="' + d + '">' + d + '</option>');
-
         });
       });
 
@@ -212,7 +211,10 @@ $(document).ready(function() {
   $('#example tbody').on('click', 'tr', function() {
     $(this).toggleClass('selected');
   });
+});
 
+/**
+  delete selected rows
   $('button').click(function() {
     alert(table.rows('.selected').data().length + 'row(s) selected');
   });
@@ -230,3 +232,4 @@ $(document).ready(function() {
     table.row('.selected').remove().draw(false);
   });
 });
+**/

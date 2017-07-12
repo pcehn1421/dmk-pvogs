@@ -1,5 +1,6 @@
-sourceFile = "./sample.txt"
-targetFile = "./JSONSample.txt"
+import os
+sourceFile = "./sample/sample.txt"
+targetFile = "./sample/JSONSample.txt"
 
 t = open(targetFile, 'w').close()
 t = open(targetFile, 'w')
@@ -12,14 +13,24 @@ with open(sourceFile, 'r') as file:
         counter = 0
         proteins = 0
         for word in line.split('\t'):
-            if counter == 1 or counter == 7 or counter == 14:
+            if counter == 7 or counter == 14:
                 counter = counter +  1
                 continue
             if counter == 4:
                 proteins = int(word)
-                counter = counter + 1
+                counter = 5
                 continue
+            if counter == 0:
+                t.write("\t\t\t\"" + word + "|")
+                counter = 1
+                continue
+            if counter == 1:
+                t.write(word + "\",\n")
+                counter = 2
+                continue
+
             t.write('\t\t\t"')
+
             if counter == 3:
                 t.write(word[3:] + "\",\n")
             elif counter == 5:
@@ -31,5 +42,5 @@ with open(sourceFile, 'r') as file:
                 t.write(word + "\"\n")
             counter = counter + 1
         t.write("\t\t],\n")
-
-t.write("\t]\n}")
+t.seek(-2, os.SEEK_CUR)
+t.write("\n\t]\n}")
