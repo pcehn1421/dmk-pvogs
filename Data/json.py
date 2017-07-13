@@ -1,6 +1,6 @@
 import os
-sourceFile = "./sample/sample.txt"
-targetFile = "./sample/JSONSample.txt"
+sourceFile = "./sample/genome.txt"
+targetFile = "./sample/target.txt"
 
 t = open(targetFile, 'w').close()
 t = open(targetFile, 'w')

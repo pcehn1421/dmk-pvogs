@@ -12,7 +12,7 @@
 
 	<script type="text/javascript" src="./Data/json2.js"></script>
 	<script type="text/javascript" src="./Support/DataTables/datatables.js"></script>
-
+	<script type="text/javascript" src="./Support/jquery-1.12.4.js"></script>
 	<link rel="stylesheet" type="text/css" href="./Support/jquery-ui/jquery-ui.css" />
 	<script type="text/javascript" src="./Support/jquery-ui/jquery-ui.js"></script>
 
@@ -46,12 +46,23 @@
 
 	</article>
 	<div id="rangeSearchWrapper">
-		<button id="rangeLink" onclick="toggleRange();">Range Search</button>
-		<div id="slider"></div>
-
+		<button id="rangeLink" type="button" class= "btn btn-secondary" onclick="toggleRange();">Range Search</button>
+		<table id="rangeSearch" >
+			<tbody>
+				<tr>
+					<td> Min </td>
+					<td><input type="text" id="min" name="min"></td>
+				</tr>
+				<tr>
+					<td> Max </td>
+					<td><input type="text" id="max" name="max"></td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
-	<div id="tableWrapper">
 
+
+	<div id="tableWrapper">
 	<table id="example" class="table" cellspacing="0" width="100%">
 		<thead>
 			<tr>

@@ -3,7 +3,7 @@ $.fn.dataTable.ext.search.push(
   function(settings, data, dataIndex) {
     var min = parseInt($('#min').val(), 10);
     var max = parseInt($('#max').val(), 10);
-    var nopVOG = parseFloat(data[4]) || 0; // use data for the age column
+    var nopVOG = parseFloat(data[4].split(" ")[1]) || 0;
 
     if ((isNaN(min) && isNaN(max)) ||
       (isNaN(min) && nopVOG <= max) ||
@@ -13,11 +13,7 @@ $.fn.dataTable.ext.search.push(
     }
     return false;
   }
-);
-//actual render the search
-$('#min, #max').keyup(function() {
-  table.draw();
-});
+);  //actual render the search
 
 
 $(document).ready(function() {
@@ -26,7 +22,6 @@ $(document).ready(function() {
   $('#rangeLink').click(function() {
     $('#rangeSearch').toggle('slow');
   });
-
   //displaying loading sign when loading data
   $('<div class="loading">Loading</div>').appendTo('body');
 
@@ -111,9 +106,8 @@ $(document).ready(function() {
         ]
       }
     ],
-    ajax: "./helper/sample/JSONSample.txt",
+    ajax: "./Data/sample/JSONSample.txt",
     rowReorder : true,
-    autoFill : true,
     columnDefs : [
       {
         targets : 0,
@@ -202,6 +196,13 @@ $(document).ready(function() {
           });
       });
     }
+  });
+
+  table.buttons().container()
+    .appendTo('#rangeSearchWrapper .col-sm-6:eq(0)');
+
+  $('#min, #max').keyup(function() {
+    table.draw();
   });
 
   $(window).bind('resize', function() {
