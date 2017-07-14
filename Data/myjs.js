@@ -1,8 +1,44 @@
-//rangeSearch with inputs
+//rangeSearch Genome Size
 $.fn.dataTable.ext.search.push(
   function(settings, data, dataIndex) {
-    var min = parseInt($('#min').val(), 10);
-    var max = parseInt($('#max').val(), 10);
+    var min = parseInt($('#min-genome').val(), 10);
+    var max = parseInt($('#max-genome').val(), 10);
+    var noGenome = parseFloat(data[2]) || 0;
+
+    if ((isNaN(min) && isNaN(max)) ||
+      (isNaN(min) && noGenome <= max) ||
+      (min <= noGenome && isNaN(max)) ||
+      (min <= noGenome && noGenome <= max)) {
+      return true;
+    }
+    return false;
+  }
+);
+
+
+//rangeSearch Proteins
+$.fn.dataTable.ext.search.push(
+  function(settings, data, dataIndex) {
+    var min = parseInt($('#min-pro').val(), 10);
+    var max = parseInt($('#max-pro').val(), 10);
+    var noPro = parseFloat(data[3]) || 0;
+
+    if ((isNaN(min) && isNaN(max)) ||
+      (isNaN(min) && noPro <= max) ||
+      (min <= noPro && isNaN(max)) ||
+      (min <= noPro && noPro <= max)) {
+      return true;
+    }
+    return false;
+  }
+);
+
+
+//rangeSearch pVOGs
+$.fn.dataTable.ext.search.push(
+  function(settings, data, dataIndex) {
+    var min = parseInt($('#min-vog').val(), 10);
+    var max = parseInt($('#max-vog').val(), 10);
     var nopVOG = parseFloat(data[4].split(" ")[1]) || 0;
 
     if ((isNaN(min) && isNaN(max)) ||
@@ -13,9 +49,26 @@ $.fn.dataTable.ext.search.push(
     }
     return false;
   }
-);  //actual render the search
+);
 
 
+
+/**
+$(function() {
+  $("#slider-protein").slider({
+    range: true,
+    min: 2,
+    max: 229,
+    step: 1,
+    values: [2,229],
+    slider: function(event, ui) {
+      $("#amount").val("$" + ui.values[0] + " - " + ui.values[1]);
+    }
+  });
+  $( "#amount" ).val( "$" + $( "#slider-protein" ).slider( "values", 0 ) +
+      " - $" + $( "#slider-protein" ).slider( "values", 1 ) );
+} )
+**/
 $(document).ready(function() {
 
   //display search boxes on click
@@ -116,20 +169,22 @@ $(document).ready(function() {
           var name = split[0]
           var id = split[1]
           return '<a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id='
-            + id + '"">' + name +'</a>';
+            + id + '"">' + name + " &#10138" +'</a>';
         }
       },
       {
         targets : 1,
         render : function(data) {
           return '<a href="https://www.ncbi.nlm.nih.gov/nuccore/'
-            + data + '"">' + data +'</a>';
+            + data + '"">' + data + " &#10138" +'</a>';
         }
       },
       {
         targets : 4,
         render : function(data) {
-          return 'See <a href="">' + data  + '</a> pVOGs';
+          //DO NOT CHANGE THIS!
+          //Spaces are set up so that it can be sorted
+          return '<a href=""> ' + data + " &#10138" + ' </a>';
         }
       },
       /*{
@@ -153,6 +208,19 @@ $(document).ready(function() {
 
     ],
     //initialize the table with the following cretirias
+    "aoColumns" : [
+      null,
+      null,
+      null,
+      null,
+      {'sType' : 'vog',},
+      null,
+      null,
+      null,
+      null,
+      null,
+      null],
+
     initComplete: function() {
       //loading mechanism
       $('div.loading').remove();
@@ -201,7 +269,15 @@ $(document).ready(function() {
   table.buttons().container()
     .appendTo('#rangeSearchWrapper .col-sm-6:eq(0)');
 
-  $('#min, #max').keyup(function() {
+  $('#min-genome, #max-genome').keyup(function() {
+    table.draw();
+  });
+
+  $('#min-pro, #max-pro').keyup(function() {
+    table.draw();
+  });
+
+  $('#min-vog, #max-vog').keyup(function() {
     table.draw();
   });
 
@@ -214,23 +290,17 @@ $(document).ready(function() {
   });
 });
 
-/**
-  delete selected rows
-  $('button').click(function() {
-    alert(table.rows('.selected').data().length + 'row(s) selected');
-  });
 
-  $('#example tbody').on('click', 'tr', function() {
-    if ($(this).hasClass('selected')) {
-      $(this).removeClass('selected');
-    } else {
-      table.$('tr.selected').removeClass('selected');
-      $(this).addClass('selected');
-    }
-  });
+// The following 3 are custom sortings for # of VOGs
+function getNum (vogs) {
+  res = Number(vogs.split(" ")[2]);
+  return res;
+};
 
-  $('button').click(function() {
-    table.row('.selected').remove().draw(false);
-  });
-});
-**/
+jQuery.fn.dataTableExt.oSort["vog-desc"] = function(x, y) {
+  return getNum(x) < getNum(y);
+};
+
+jQuery.fn.dataTableExt.oSort["vog-asc"] = function(x, y) {
+  return getNum(x) > getNum(y);
+};
