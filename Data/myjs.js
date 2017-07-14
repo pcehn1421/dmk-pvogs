@@ -159,15 +159,15 @@ $(document).ready(function() {
         ]
       }
     ],
-    ajax: "./Data/sample/JSONSample.txt",
+    ajax: "./Data/sample/target.txt",
     rowReorder : true,
     columnDefs : [
       {
         targets : 0,
         render : function(data) {
-          var split = data.split("|")
-          var name = split[0]
-          var id = split[1]
+          var split = data.split("|");
+          var name = split[0];
+          var id = split[1];
           return '<a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id='
             + id + '"">' + name + " &#10138" +'</a>';
         }
@@ -175,6 +175,15 @@ $(document).ready(function() {
       {
         targets : 1,
         render : function(data) {
+          var split = data.split(",");
+          var ans = "";
+          if (split.length > 1) {
+            for (var i = 0; i < split.length; i++) {
+              ans = ans + '<a href="https://www.ncbi.nlm.nih.gov/nuccore/'
+                + split[i] + '"">' + split[i] + " &#10138" +'</a> </br>';
+            }
+            return ans;
+          }
           return '<a href="https://www.ncbi.nlm.nih.gov/nuccore/'
             + data + '"">' + data + " &#10138" +'</a>';
         }
