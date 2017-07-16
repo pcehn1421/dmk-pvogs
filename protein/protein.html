@@ -17,7 +17,23 @@
   <script>
     $(document).ready(function() {
       $('#example').DataTable({
-        ajax: './Sample/proteinSampleJSON.txt'
+        ajax: './Sample/proteinSampleJSON.txt',
+				initComplete: function() {
+					this.api().columns().every(function () {
+						var column = this;
+						var searchFooter =
+							$('<input type="text" placeholder="search"/>')
+								.appendTo($(column.footer()))
+								.on('keyup', function() {
+									var val = $.fn.dataTable.util.escapeRegex(
+										$(this).val()
+									);
+									column
+										.search(val, false, true, true)
+										.draw();
+								});
+					});
+				}
       });
     });
   </script>

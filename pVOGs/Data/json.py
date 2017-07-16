@@ -2,7 +2,7 @@ import os
 sourceFile = "./sample/genome.txt"
 targetFile = "./sample/target.txt"
 
-t = open(targetFile, 'w').close()
+t = open(targetFile, 'w').close() #clean the file
 t = open(targetFile, 'w')
 
 t.write('{\n\t"data" : [\n')
@@ -49,7 +49,7 @@ with open(sourceFile, 'r') as file:
                     t.write(word + "\",\n")
             elif counter == 3:
                 if "|" in word:
-                    res = int(word.split("|")[0][3:]) + int(word.split("|")[1][3:]) + int(word.split("|")[2][3:]) 
+                    res = int(word.split("|")[0][3:]) + int(word.split("|")[1][3:]) + int(word.split("|")[2][3:])
                     t.write(str(res) + "\",\n")
                 else:
                     t.write(word[3:] + "\",\n")
