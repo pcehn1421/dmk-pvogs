@@ -1,6 +1,6 @@
 import os
-sourceFile = "./protein.txt"
-targetFile = "./proteinJSON.txt"
+sourceFile = "./largeSample.txt"
+targetFile = "./largeJSON.txt"
 
 t = open(targetFile, 'w').close()
 t = open(targetFile, 'w')
@@ -21,5 +21,5 @@ with open(sourceFile, 'r') as file:
 
         t.write("\t\t],\n")
 
-t.seek(-2, os.SEEK_CUR)
+#t.seek(-2, os.SEEK_CUR)
 t.write("\n\t]\n}")

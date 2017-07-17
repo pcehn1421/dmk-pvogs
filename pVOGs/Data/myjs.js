@@ -169,7 +169,7 @@ $(document).ready(function() {
           var name = split[0];
           var id = split[1];
           return '<a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id='
-            + id + '"">' + name + " &#10138" +'</a>';
+            + id + '"">' + name +'</a>';
         }
       },
       {
@@ -186,6 +186,12 @@ $(document).ready(function() {
           }
           return '<a href="https://www.ncbi.nlm.nih.gov/nuccore/'
             + data + '"">' + data + " &#10138" +'</a>';
+        }
+      },
+      {
+        targets : 3,
+        render : function(data) {
+          return '<a href = "../protein/protein.html#hash=' + data.split("|")[1] + '">' + data.split("|")[0] + '</a>';
         }
       },
       {
