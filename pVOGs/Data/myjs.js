@@ -86,7 +86,10 @@ $(document).ready(function() {
     select: true,
     dom: 'Blfrtip',
     buttons: [
-      'colvis',
+      {
+        extend: 'colvis',
+        text: 'Show/Hide Columns'
+      },
       {
         extend: 'collection',
         text: 'Export options',

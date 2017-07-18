@@ -18,14 +18,14 @@
 
     function getHash(key) {
       var match = location.hash.match(new RegExp(key+'=([^&]*)'));
-      return match ? match[1] : null;
+      return match ? match[1] : "";
     }
     //get the prefilter element
     var hash = getHash('hash');
 
     $(document).ready(function() {
       $('#example').DataTable({
-        ajax: './Sample/largeJSON.txt',
+        ajax: './Sample/proteinJSON.txt',
 
 				initComplete: function() {
 

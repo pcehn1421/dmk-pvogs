@@ -1,25 +1,31 @@
 import os
-sourceFile = "./largeSample.txt"
-targetFile = "./largeJSON.txt"
+sourceFile = "./protein.txt"
+targetFile = "./proteinJSON.txt"
 
 t = open(targetFile, 'w').close()
 t = open(targetFile, 'w')
 
-t.write('{\n\t"data\" : [\n')
+t.write('{\"data\" : [\n')
 
 with open(sourceFile, 'r') as file:
     for line in file:
         counter = 0
-        t.write("\t\t[\n")
+        t.write("[")
         for word in line.split(':'):
             counter = counter + 1
             if counter == 4:
-                t.write("\t\t\t\"" + word[:-1] + "\"\n")
+                t.write("\"" + word + "\"],\n")
                 break
             else:
-                t.write("\t\t\t\"" + word + "\",\n")
+                t.write("\"" + word + "\",")
 
-        t.write("\t\t],\n")
 
-#t.seek(-2, os.SEEK_CUR)
-t.write("\n\t]\n}")
+t.close();
+
+data = open(targetFile, "r").read()
+data = data[:-2]
+
+t = open(targetFile, 'w')
+
+t.write(data)
+t.write("]}")
