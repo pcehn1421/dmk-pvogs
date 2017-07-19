@@ -8,9 +8,8 @@ var hash = getHash('hash');
 $(document).ready(function() {
 
   var table =  $('#example').DataTable({
-
-    serverSide: true,
-    ajax: './src/proteinJSON.txt',
+    
+    ajax: './src/sample/proteinSmallSampleJSON.txt',
 
 		initComplete: function() {
 
@@ -34,4 +33,7 @@ $(document).ready(function() {
       this.api().search(hash).draw();
 		}
  });
+  if (hash != "") {
+    $('<p> You are searching for all the proteins that the genome with Genome Accession : ' + hash + ' has <p>').appendTo('#example_length'); 
+  }
 });

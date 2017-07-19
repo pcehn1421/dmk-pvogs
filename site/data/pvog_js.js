@@ -171,7 +171,7 @@ $(document).ready(function() {
           var name = split[0];
           var id = split[1];
           return '<a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id='
-            + id + '"">' + name +'</a>';
+            + id + '" target="_blank">' + name +' &#8599</a>';
         }
       },
       {
@@ -182,18 +182,18 @@ $(document).ready(function() {
           if (split.length > 1) {
             for (var i = 0; i < split.length; i++) {
               ans = ans + '<a href="https://www.ncbi.nlm.nih.gov/nuccore/'
-                + split[i] + '"">' + split[i] + " &#10138" +'</a> </br>';
+                + split[i] + '" target="_blank">' + split[i] + " &#8599" +'</a> </br>';
             }
             return ans;
           }
           return '<a href="https://www.ncbi.nlm.nih.gov/nuccore/'
-            + data + '"">' + data + " &#10138" +'</a>';
+            + data + '" target="_blank">' + data + " &#8599" +'</a>';
         }
       },
       {
         targets : 3,
         render : function(data) {
-          return '<a href = ".protein.html#hash=' + data.split("|")[1] + '">' + data.split("|")[0] + '</a>';
+          return '<a href = "./protein.html#hash=' + data.split("|")[1] + '" target="_blank">' + data.split("|")[0] + '&#8601</a>';
         }
       },
       {
@@ -201,7 +201,7 @@ $(document).ready(function() {
         render : function(data) {
           //DO NOT CHANGE THIS!
           //Spaces are set up so that it can be sorted
-          return '<a href=""> ' + data + " &#10138" + ' </a>';
+          return '<a href=""> ' + data + ' &#8601 </a>';
         }
       },
       /*{
