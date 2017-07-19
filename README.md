@@ -1,4 +1,5 @@
-This repo contains the example files for pVOGs website.  </br>
-Content/datatable.html is the main file </br>
-Content/helper contains files I wrote to suppor the website, json.py converts a tsv file to a JSON file </br>
-Content/DataTables contains all the actual files for supporting the website, i.e., the css files and js files </br>
+This repo contains files for pVOGs and proteins webpage <br>
+Folder site contains all files related to the website <br>
+data contains all files I wrote - protein_js.js and pvog_js.js are javascript codes for protein and pvog websites respectively. <br>
+src contains the json code, raw srouce file (csv,tsv), some samples, and the python code used to convert txt files to json files. <br>
+files contains depended libraries for the website - DataTable, jQueryUI. <br>
