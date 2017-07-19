@@ -9,7 +9,7 @@ $(document).ready(function() {
 
   var table =  $('#example').DataTable({
     
-    ajax: './src/sample/proteinSmallSampleJSON.txt',
+    ajax: './src/sample/proteinJSON.txt',
 
 		initComplete: function() {
 
