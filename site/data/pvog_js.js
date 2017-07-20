@@ -73,8 +73,15 @@ $(function() {
 $(document).ready(function() {
 
   //display search boxes on click
-  $('#rangeLink').click(function() {
+  $('.rangeLink').click(function() {
+    var $this = $(this);
     $('#rangeSearch').toggle('slow');
+    $this.toggleClass('hideLink');
+    if($this.hasClass(".rangeLink")) {
+      $this.text("Show Range Search");
+    } else {
+      $this.text("Hide Range Search")
+    }
   });
 
   var table = $('#example').DataTable({
@@ -193,15 +200,19 @@ $(document).ready(function() {
       {
         targets : 3,
         render : function(data) {
-          return '<a href = "./protein.html#hash=' + data.split("|")[1] + '" target="_blank">' + data.split("|")[0] + '&#8601</a>';
+          return '<a href = "./protein.html#genomeAccession=' + data.split("|")[1] + '" target="_blank">' + data.split("|")[0] + '&#8601</a>';
         }
       },
       {
         targets : 4,
         render : function(data) {
-          //DO NOT CHANGE THIS!
-          //Spaces are set up so that it can be sorted
-          return '<a href=""> ' + data + ' &#8601 </a>';
+          if (data == '0') {
+            return '0';
+          } else {
+            //DO NOT CHANGE THIS!
+            //Spaces are set up so that it can be sorted
+            return '<a href=""> ' + data + ' &#8601 </a>';
+          }
         }
       },
       /*{
@@ -296,10 +307,6 @@ $(document).ready(function() {
     table.draw();
   });
 
-  $(window).bind('resize', function() {
-    table.fnAdjustColumnSizing();
-  });
-
   $('#example tbody').on('click', 'tr', function() {
     $(this).toggleClass('selected');
   });
@@ -308,8 +315,12 @@ $(document).ready(function() {
 
 // The following 3 are custom sortings for # of VOGs
 function getNum (vogs) {
-  res = Number(vogs.split(" ")[2]);
-  return res;
+  if (vogs == '0') {
+    return 0;
+  } else {
+    res = Number(vogs.split(" ")[2]);
+    return res;
+  }
 };
 
 jQuery.fn.dataTableExt.oSort["vog-desc"] = function(x, y) {

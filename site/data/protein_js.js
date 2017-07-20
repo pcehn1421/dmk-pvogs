@@ -3,13 +3,13 @@ function getHash(key) {
   return match ? match[1] : "";
 }
 //get the prefilter element
-var hash = getHash('hash');
+var hash = getHash('genomeAccession');
 
 $(document).ready(function() {
 
   var table =  $('#example').DataTable({
-    
-    ajax: './src/sample/proteinJSON.txt',
+
+    ajax: './src/proteinJSON.txt',
 
 		initComplete: function() {
 
@@ -34,6 +34,6 @@ $(document).ready(function() {
 		}
  });
   if (hash != "") {
-    $('<p> You are searching for all the proteins that the genome with Genome Accession : ' + hash + ' has <p>').appendTo('#example_length'); 
+    $('<p> You are searching for all the proteins that the genome with Genome Accession : ' + hash + ' has <p>').appendTo('#example_length');
   }
 });
