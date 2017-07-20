@@ -78,9 +78,9 @@ $(document).ready(function() {
     $('#rangeSearch').toggle('slow');
     $this.toggleClass('hideLink');
     if($this.hasClass(".rangeLink")) {
-      $this.text("Show Range Search");
+      $this.text("Hide Range Search");
     } else {
-      $this.text("Hide Range Search")
+      $this.text("Show Range Search")
     }
   });
 
@@ -90,11 +90,13 @@ $(document).ready(function() {
       [10, 25, 50, "All"]
     ],
     select: true,
+    stripeClasses: ['odd-row', 'even-row'],
     dom: 'Blfrtip',
     buttons: [
       {
         extend: 'colvis',
-        text: 'Show/Hide Columns'
+        text: 'Show/Hide Columns',
+        //className: 'tableButtons'
       },
       {
         extend: 'collection',
